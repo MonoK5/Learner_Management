@@ -25,16 +25,16 @@ class Student {
 }
 class Database {
 
-    private static final String url = "jdbc:postgresql://localhost:5432/students";
+    private static final String url = "jdbc:postgresql://localhost:5432/postgres";
     private static final String user = "postgres";
-    private static final String password = "Letsdoit!";
+    private static final String password = "root";
 
     public static void initDB() {
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement()) {
 
             String createDB = """
-                CREATE TABLE IF NOT EXISTS students (
+                CREATE TABLE IF NOT EXISTS Learner (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(50),
                     score INT,
@@ -43,7 +43,7 @@ class Database {
             """;
 
             stmt.executeUpdate(createDB);
-            System.out.println("Table created or already exists.");
+            System.out.println("Table created");
 
         } catch (SQLException e) {
             System.out.println("Database initialization failed: " + e.getMessage());
