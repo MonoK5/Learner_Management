@@ -2,17 +2,15 @@ package org.example;
 
 public class Student {
     //Variables
-    private static int idCounter = 1;
     private int id;
     private int score;
     private int grade;
     private String name;
 
-    private int sMarks;
 
     // Constructor
-    public Student(String sName, int sMarks) {
-        setId(idCounter++);
+    public Student(int sId, String sName, int sMarks) {
+        setId(sId);
         setName(sName);
         setScore(sMarks);
         setGrade(10);
@@ -82,7 +80,7 @@ public class Student {
     @Override
     public String toString() {
         return "Student Details {" +
-                " Student ID: " + getId() +
+                "  ID: " + getId() +
                 ", Name: " + getName() +
                 ", Marks: " + getScore() +
                 ", Grade: " + getGrade() +

@@ -10,7 +10,7 @@ import java.util.Scanner;
 // Abstract
 
 public class Main {
-
+static int idCount = 1;
     public static void main(String[] args) throws SQLException {
 
         Connection connection =  Database.initDB();
@@ -56,7 +56,14 @@ public class Main {
 //            }
 
             switch (select) {
-                case 1 -> studentMainExtend.displayAllStudent();
+                case 1 ->{
+
+                    List<Student> studentList = studentMainExtend.displayAllStudent();
+
+                    for (Student s: studentList){
+                        System.out.println(s.getName());
+                    }
+                }
 //                case 2 -> studentMainExtend.addNewStudent(newStudents);
                 case 2 -> {
 //
@@ -67,7 +74,7 @@ public class Main {
                         System.out.println("Add student marks: ");
                         int sMarks = input.nextInt();
 
-                        Student newStudents = new Student(sName, sMarks);
+                        Student newStudents = new Student(idCount, sName, sMarks);
                         studentMainExtend.addNewStudent(newStudents);
 
 //                case 3 -> updateStudent(students, input);

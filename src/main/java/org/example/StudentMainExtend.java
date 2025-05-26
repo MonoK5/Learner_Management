@@ -16,7 +16,7 @@ public class StudentMainExtend extends StudentMain {
 
     @Override
     public void addNewStudent(Student newStudents) throws SQLException {
-        String insertQuery = "INSERT INTO students (name, score) VALUES (?,?)";
+        String insertQuery = "INSERT INTO Students (name, score) VALUES (?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery) ){
             preparedStatement.setString(1, newStudents.getName() );
             preparedStatement.setInt(2, newStudents.getScore());
@@ -29,7 +29,7 @@ public class StudentMainExtend extends StudentMain {
 
 
         var students = new ArrayList<Student>();
-        String sql  = "SELECT * FROM students ORDER BY id";
+        String sql  = "SELECT * FROM Students ORDER BY id";
 
         try (Connection conn =  Database.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -37,9 +37,10 @@ public class StudentMainExtend extends StudentMain {
 
             while (rs.next()) {
                 students.add(new Student(
+                        rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getInt("marks")
-                ));
+                        rs.getInt("score")
+                 ));
             }
         } catch (SQLException e){
             System.out.println("Student details not available " + e.getMessage());
