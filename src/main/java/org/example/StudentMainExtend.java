@@ -7,17 +7,14 @@ import java.util.Scanner;
 
 public class StudentMainExtend extends StudentMain {
 
-   private final Connection connection;
-    Scanner scanner = new Scanner(System.in);
 
-    public StudentMainExtend(Connection connection) throws SQLException {
-        this.connection =  Database.getConnection();
-    }
+
+
 
     @Override
     public void addNewStudent(Student newStudents) throws SQLException {
         String insertQuery = "INSERT INTO Students (name, grade, score) VALUES (?,?,?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery) ){
+        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(insertQuery) ) {
             preparedStatement.setString(1, newStudents.getName() );
             preparedStatement.setInt(2, newStudents.getGrade());
             preparedStatement.setInt(3, newStudents.getScore());
@@ -64,7 +61,7 @@ public class StudentMainExtend extends StudentMain {
         List<Student> matchedStudents = new ArrayList<>();
         String searchQuery = "SELECT * FROM Students WHERE LOWER(name) = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(searchQuery)) {
+        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(searchQuery)) {
             preparedStatement.setString(1, search.getName().toLowerCase());
             ResultSet resultSet = preparedStatement.executeQuery();
 

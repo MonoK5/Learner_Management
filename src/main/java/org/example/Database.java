@@ -11,7 +11,7 @@ public class Database {
     private static final String user = "postgres";
     private static final String password = "root";
 
-    public static Connection initDB() {
+    public static void initDB() {
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement()) {
 
@@ -30,7 +30,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println("Database initialization failed: " + e.getMessage());
         }
-        return null;
+
     }
 
     public static Connection getConnection() throws SQLException {
