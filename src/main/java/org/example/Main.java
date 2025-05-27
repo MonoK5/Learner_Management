@@ -110,7 +110,7 @@ studentMainExtend.displayAllStudent();
 
 
         while (studentToUpdate == null) {
-            System.out.print("Enter student ID to update: ");
+            System.out.print("Enter student ID:");
             String idInput = input.nextLine();
 
             try {
