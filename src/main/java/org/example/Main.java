@@ -96,7 +96,7 @@ static int idCount = 1;
                         System.out.println("ID     | NAME  |  MARKS  |  GRADE  |");
                         System.out.println("-----------------------------------");
                         for (Student student : results) {
-                            System.out.printf("| %-1d    | %-6s   ", student.getId(), student.getName());
+                            System.out.printf("| %-1d    | %-6s   | %-9d | %-3s", student.getId(), student.getName(),student.getScore(),student.getGrade());
                         }
                     }
                 }
