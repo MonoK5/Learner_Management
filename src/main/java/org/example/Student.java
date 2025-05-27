@@ -31,10 +31,10 @@ public class Student {
             return;
         }
 
-        if (!sName.matches("[a-zA-Z ]+")) {
-            System.out.println("Only letters and spaces are allowed");
-            return;
-        }
+//        if (!sName.matches("[a-zA-Z ]+")) {
+//            System.out.println("Only letters and spaces are allowed");
+//            return;
+//        }
 
         if (sName.length() > 50) {
             System.out.println("Maximum 50 characters are allowed");
