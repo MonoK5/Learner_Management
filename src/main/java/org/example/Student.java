@@ -19,7 +19,7 @@ public class Student {
     //Setters
     public void setId(int sId) {
         if (sId <= 0) {
-            System.out.println("Invalid ID, must be positive");
+//            System.out.println("Invalid ID, must be positive");
             return;
         }
         this.id = sId;

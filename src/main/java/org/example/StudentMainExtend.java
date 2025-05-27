@@ -54,8 +54,29 @@ public class StudentMainExtend extends StudentMain {
         return  0;
     }
     @Override
-    public List<Student> searchStudent(Student search) throws  SQLException{
-        return  new ArrayList<>();
+//    public List<Student> searchStudent(Student search) throws  SQLException{
+//        return  new ArrayList<>();
+//    }
+    public List<Student> searchStudent(Student search) throws SQLException {
+        List<Student> matchedStudents = new ArrayList<>();
+        String searchQuery = "SELECT * FROM Students WHERE LOWER(name) = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(searchQuery)) {
+            preparedStatement.setString(1, search.getName().toLowerCase());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                matchedStudents.add(new Student(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getInt("score")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while searching student: " + e.getMessage());
+        }
+
+        return matchedStudents;
     }
     @Override
     public void deleteStudent(int studentId) throws SQLException{}

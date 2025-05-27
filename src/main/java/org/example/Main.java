@@ -80,7 +80,21 @@ static int idCount = 1;
 //                case 3 -> updateStudent(students, input);
 //                case 4 -> deleteStudent(students, input);
 //                case 5 -> calculateAverage(students);
-//                case 6 -> searchStudent(students, input);
+                }
+                case 6 -> {
+                    System.out.print("Enter name to search: ");
+                    String searchName = input.next();
+                    Student searchStudent = new Student(0, searchName, 0); // Only name is used
+                    List<Student> results = studentMainExtend.searchStudent(searchStudent);
+
+                    if (results.isEmpty()) {
+                        System.out.println("No students found with that name.");
+                    } else {
+                        System.out.println("Search results:");
+                        for (Student student : results) {
+                            System.out.println("ID: " + student.getId() + ", Name: " + student.getName() + ", Score: " + student.getScore());
+                        }
+                    }
                 }
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Invalid choice.");
