@@ -16,10 +16,12 @@ public class StudentMainExtend extends StudentMain {
 
     @Override
     public void addNewStudent(Student newStudents) throws SQLException {
-        String insertQuery = "INSERT INTO Students (name, score) VALUES (?,?)";
+        String insertQuery = "INSERT INTO Students (name, grade, score) VALUES (?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery) ){
             preparedStatement.setString(1, newStudents.getName() );
-            preparedStatement.setInt(2, newStudents.getScore());
+            preparedStatement.setInt(2, newStudents.getGrade());
+            preparedStatement.setInt(3, newStudents.getScore());
+
             preparedStatement.executeUpdate();
 
         }
@@ -40,6 +42,7 @@ public class StudentMainExtend extends StudentMain {
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getInt("score")
+
                  ));
             }
         } catch (SQLException e){

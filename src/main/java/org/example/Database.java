@@ -19,7 +19,8 @@ public class Database {
                 CREATE TABLE IF NOT EXISTS Students (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(50),
-                    score INT
+                    score INT,
+                    grade INT
                 );
             """;
 

@@ -61,7 +61,7 @@ static int idCount = 1;
                     List<Student> studentList = studentMainExtend.displayAllStudent();
 
                     for (Student s: studentList){
-                        System.out.println(s.getName());
+                        System.out.println("name "+s.getName()  +" grade " +s.getGrade() );
                     }
                 }
 //                case 2 -> studentMainExtend.addNewStudent(newStudents);
@@ -92,7 +92,9 @@ static int idCount = 1;
                     } else {
                         System.out.println("Search results:");
                         for (Student student : results) {
-                            System.out.println("ID: " + student.getId() + ", Name: " + student.getName() + ", Score: " + student.getScore());
+                            System.out.println("ID: " + student.getId() + ", Name: " + student.getName() + ", Score: "
+                                    + student.getScore()
+                                    + "grade"+ student.getGrade());
                         }
                     }
                 }
