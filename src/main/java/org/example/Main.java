@@ -90,11 +90,13 @@ static int idCount = 1;
                     if (results.isEmpty()) {
                         System.out.println("No students found with that name.");
                     } else {
+
                         System.out.println("Search results:");
+                        System.out.println("-----------------------------------");
+                        System.out.println("ID     | NAME  |  MARKS  |  GRADE  |");
+                        System.out.println("-----------------------------------");
                         for (Student student : results) {
-                            System.out.println("ID: " + student.getId() + ", Name: " + student.getName() + ", Score: "
-                                    + student.getScore()
-                                    + "grade"+ student.getGrade());
+                            System.out.printf("| %-1d    | %-6s   ", student.getId(), student.getName());
                         }
                     }
                 }
