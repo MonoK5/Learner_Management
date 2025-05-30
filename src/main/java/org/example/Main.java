@@ -1,31 +1,23 @@
 package org.example;
-
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static org.example.StudentData.deleteStudent;
 
-
-// Abstract
 
 public class Main {
-static int idCount = 1;
+    static HighSchoolStudent schoolStudent = new HighSchoolStudent();
     public static void main(String[] args) throws SQLException {
 
-        Connection connection =  Database.initDB();
-//        ArrayList<Student> students = new ArrayList<>();
+        Database.initDB();
+
         Scanner input = new Scanner(System.in);
-        StudentMainExtend studentMainExtend = new StudentMainExtend(connection);
 
+        int select = -1;
 
-//        students.add(new Student("Jade", 35));
-//        students.add(new Student("Life", 60));
-//        students.add(new Student("Jack", 77));
-
-        int select;
         do {
-            System.out.println("\n--- Grade 10 Students ---");
+            System.out.println("\n--- Students Management (Grade 10) ---");
             System.out.println("1. Display All Students");
             System.out.println("2. Add Student");
             System.out.println("3. Update Student");
@@ -34,69 +26,38 @@ static int idCount = 1;
             System.out.println("6. Search Student by Name");
             System.out.println("0. Exit");
             System.out.print("Select a number: ");
-            select = input.nextInt();
 
+            String userInput = input.nextLine();
 
-//            System.out.println("INPUT NAME");
-//            String sName = input.next();
-//
-//            System.out.println("INPUT NUMBER");
-//            int sMarks = input.nextInt();
-//
-//
-//            Student student = new Student(sName, sMarks);
+            if (!userInput.matches("\\d+")) {
+                System.out.println("Please enter a valid number (positive only).");
+                continue;
+            }
 
-
-
-//            switch (select){
-//                case 1: System.out.println(" Display");
-//                break;
-//                case 2: System.out.println("Enter student name");
-//                      String name = input.next();
-//            }
+            select = Integer.parseInt(userInput);
 
             switch (select) {
-                case 1 ->{
-
-                    List<Student> studentList = studentMainExtend.displayAllStudent();
-
-                    for (Student s: studentList){
-                        System.out.println("name "+s.getName()  +" grade " +s.getGrade() );
-                    }
-                }
-//                case 2 -> studentMainExtend.addNewStudent(newStudents);
-                case 2 -> {
-//
-//                      StudentMainExtend studentMainExtend1 = new StudentMainExtend();
-//
-                        System.out.println("Add student name: ");
-                        String sName = input.next();
-                        System.out.println("Add student marks: ");
-                        int sMarks = input.nextInt();
-
-                        Student newStudents = new Student(idCount, sName, sMarks);
-                        studentMainExtend.addNewStudent(newStudents);
-
-//                case 3 -> updateStudent(students, input);
-//                case 4 -> deleteStudent(students, input);
-//                case 5 -> calculateAverage(students);
-                }
+                //case 1 -> displayAllStudents();
+               // case 2 -> addStudent(input);
+               // case 3 -> updateStudent(input);
+                case 4 -> deleteStudent(input);
+               // case 5 -> calculateAverage(input);
                 case 6 -> {
                     System.out.print("Enter name to search: ");
-                    String searchName = input.next();
-                    Student searchStudent = new Student(0, searchName, 0); // Only name is used
-                    List<Student> results = studentMainExtend.searchStudent(searchStudent);
+                    String searchName = input.nextLine();
+                    Student searchStudent = new Student(0, searchName, 0);
+                    List<Student> results = schoolStudent.searchStudent(searchStudent) ;
 
                     if (results.isEmpty()) {
                         System.out.println("No students found with that name.");
                     } else {
-
                         System.out.println("Search results:");
                         System.out.println("-----------------------------------");
                         System.out.println("ID     | NAME  |  MARKS  |  GRADE  |");
                         System.out.println("-----------------------------------");
                         for (Student student : results) {
-                            System.out.printf("| %-1d    | %-6s   | %-9d | %-3s", student.getId(), student.getName(),student.getScore(),student.getGrade());
+                            System.out.printf("| %-1d    | %-6s   | %-9d | %-3s",
+                                    student.getId(), student.getName(), student.getScore(), student.getGrade());
                         }
                     }
                 }
@@ -107,7 +68,3 @@ static int idCount = 1;
         } while (select != 0);
     }
 }
-
-
-
-
