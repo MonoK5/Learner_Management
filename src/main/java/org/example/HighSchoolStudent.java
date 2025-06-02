@@ -9,11 +9,49 @@ import static org.example.StudentData.formatter;
 public class HighSchoolStudent extends AbstractStudent {
 
     @Override
-    public  void  addNewStudent(Student newStudents) throws SQLException {
+    public void addNewStudent(Student newStudents) throws SQLException {
 
+        if (studentExists(newStudents)) {
 
+            System.out.println("Student " + newStudents.getName() + " with score " +
+                    newStudents.getGrade() + " already exists.");
+            return;
+        }else {
+            System.out.println( formatter(newStudents.getName())+ " was added successfully.");
+        }
+
+        String sql = "INSERT INTO student (id, name, score, grade) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = Database.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setInt(1, newStudents.getId());
+            pstmt.setString(2, newStudents.getName());
+            pstmt.setInt(3, newStudents.getScore());
+            pstmt.setInt(4, newStudents.getGrade());
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e){
+            System.out.println("Error for adding new student: "+ e.getMessage());
+        }
     }
     @Override
+    public boolean isIdUnique(int id) throws SQLException {
+
+    String sql = "SELECT COUNT(*) FROM student WHERE id = ?";
+
+    try (Connection conn = Database.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) == 0;
+        }
+    }
+    return false;
+}
+@Override
     public List<Student> displayAllStudent() throws SQLException {
 
        return  null;

@@ -5,6 +5,7 @@ import java.util.List;
 
 abstract  class AbstractStudent {
     protected abstract void addNewStudent(Student newStudents) throws SQLException;
+    protected abstract boolean isIdUnique(int id) throws SQLException;
     protected abstract List<Student> displayAllStudent() throws  SQLException;
     protected abstract void updateStudentDetails(Student updateDetails) throws  SQLException;
     abstract double calculateAllMarksAvg (List<Student> calculateAvg) throws  SQLException;
