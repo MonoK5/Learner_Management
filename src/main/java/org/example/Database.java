@@ -6,14 +6,14 @@ public class Database {
 
     private static final String url = "jdbc:postgresql://localhost:5432/postgres";
     private static final String user = "postgres";
-    private static final String password = "0609440410";
+    private static final String password = "root";
 
     public static void initDB() {
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement()) {
 
             String createDB = """
-                CREATE TABLE IF NOT EXISTS Students (
+                CREATE TABLE IF NOT EXISTS student (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(50),
                     score INT,

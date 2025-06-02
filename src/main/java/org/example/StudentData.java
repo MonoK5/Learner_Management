@@ -1,14 +1,13 @@
 package org.example;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public final class StudentData {
     private static final HighSchoolStudent schoolStudent = new HighSchoolStudent();
-    private static int idCounter = 1;
+  //  private static int idCounter = 1;
 
     public static String formatter(String name){
         name = name.substring(0,1).toUpperCase().trim() +
