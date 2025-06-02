@@ -1,17 +1,14 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Database {
 
     private static final String url = "jdbc:postgresql://localhost:5432/postgres";
     private static final String user = "postgres";
-    private static final String password = "root";
+    private static final String password = "0609440410";
 
-    public static Connection initDB() {
+    public static void initDB() {
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement()) {
 
@@ -30,10 +27,13 @@ public class Database {
         } catch (SQLException e) {
             System.out.println("Database initialization failed: " + e.getMessage());
         }
-        return null;
     }
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
 }
+
+
+
+
