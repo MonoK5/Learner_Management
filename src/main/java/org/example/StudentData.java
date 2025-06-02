@@ -15,83 +15,83 @@ public final class StudentData {
 
         return  name;
     }
+
     static void addStudent(Scanner input) throws SQLException {
-        int score;
+        int score = 0;
         String name;
         boolean isValid;
         boolean addNewStud = true;
         String choice;
         int generatedId;
-
         Random random = new Random();
 
         System.out.println("\n--- Add Student ---");
 
         while (addNewStud) {
-            System.out.print("Are you sure you want to add a new student (y/n)?: ");
+
+            do {
+                System.out.print("Enter student name (0 to cancel adding student): ");
+                name = input.nextLine().trim();
+                isValid = true;
+
+                if ("0".equals(name) ) {
+                    System.out.println("Returning to main menu.");
+                    return;
+                }
+
+                if (name.isEmpty()) {
+                    System.out.println("Name cannot be empty");
+                    isValid = false;
+                } else if (!name.matches("[a-zA-Z ]+")) {
+                    System.out.println("Only letters and spaces are allowed");
+                    isValid = false;
+                } else if (name.length() > 50) {
+                    System.out.println("Maximum 50 characters are allowed");
+                    isValid = false;
+                }
+            } while (!isValid);
+
+            boolean validScore = false;
+            while (!validScore) {
+                System.out.print("Enter student score  (0 to cancel adding student): ");
+                String scoreInput = input.nextLine().trim();
+
+                if ("0".equals(scoreInput)) {
+                    System.out.println("Returning to main menu.");
+                    return;
+                }
+
+                if (scoreInput.matches("\\d+")) {
+                    score = Integer.parseInt(scoreInput);
+                    if (score < 0 || score > 100) {
+                        System.out.println("Score must be between 0-100.");
+                    } else {
+                        validScore = true;
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a number between 0-100.");
+                }
+            }
+
+            System.out.print("Are you sure you want to add this student (y/n)?: ");
             choice = input.nextLine().trim().toLowerCase();
 
-            switch (choice) {
-                case "y":
-                    do {
-                        System.out.print("Enter student name (or want to quit? press q to exit): ");
-                        name = input.nextLine().trim();
-                        isValid = true;
+            if ("y".equals(choice)) {
+                do {
+                    generatedId = random.nextInt(1000);
+                } while (!schoolStudent.isIdUnique(generatedId));
 
-                        if ("q".equalsIgnoreCase(name) || "quit".equalsIgnoreCase(name)) {
-                            System.out.println("Returning to main menu.");
-                            return;
-                        }
+                Student student = new Student(generatedId, name, score);
+                schoolStudent.addNewStudent(student);
+            } else {
+                System.out.println("Student was not added.");
+            }
 
-                        if (name.isEmpty()) {
-                            System.out.println("Name cannot be empty");
-                            isValid = false;
-                        } else if (!name.matches("[a-zA-Z ]+")) {
-                            System.out.println("Only letters and spaces are allowed");
-                            isValid = false;
-                        } else if (name.length() > 50) {
-                            System.out.println("Maximum 50 characters are allowed");
-                            isValid = false;
-                        }
-                    } while (!isValid);
-
-                    while (true) {
-                        System.out.print("Enter student score (or want to quit? press q to exit): ");
-                        String scoreInput = input.nextLine().trim();
-
-                        if ("q".equalsIgnoreCase(name) || "quit".equalsIgnoreCase(name)) {
-                            System.out.println("Returning to main menu.");
-                            return;
-                        }
-
-                        try {
-                            score = Integer.parseInt(scoreInput);
-                            if (score < 0 || score > 100) {
-                                System.out.println("Score must be between 0-100.");
-                            } else {
-                                break;
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number between 0-100.");
-                        }
-                    }
-
-                    do {
-                        generatedId = random.nextInt(1000);
-
-                    } while (!schoolStudent.isIdUnique(generatedId));
-
-                    Student student = new Student(generatedId, name, score);
-                    schoolStudent.addNewStudent(student);
-                    break;
-                case "n":
-                    System.out.println("Returning to main menu.");
-                    addNewStud = false;
-                    break;
-
-                default:
-                    System.out.println("Invalid input. Please enter (y/n).");
-                    break;
+            System.out.print("Do you want to add another student (y/n)?: ");
+            String again = input.nextLine().trim().toLowerCase();
+            if (again.equals("n")) {
+                addNewStud = false;
+                System.out.println("Returning to main menu.");
             }
         }
     }
@@ -109,7 +109,7 @@ public final class StudentData {
         boolean continueDeleting = true;
         while (continueDeleting) {
             // Display All Students
-          schoolStudent.displayAllStudent();
+            displayAllStudents();
             // Ask User If They Want to Delete
             System.out.println("\n\t--- Delete Student ---");
             System.out.print("Do you want to delete a student? (y/n): ");
@@ -141,18 +141,22 @@ public final class StudentData {
                         break;
                     }
                     // Confirm Deletion
-                    System.out.print("Are you sure you want to delete ID " + toDelete.getId() + "? (y/n): ");
+                    System.out.print("Are you sure you want to delete Student ID: " + toDelete.getId() +
+                                    " (" + formatter(toDelete.getName()) + ")? (y/n): ");
                     String confirm = input.nextLine().trim().toLowerCase();
                     // Perform Deletion
-                    if (confirm.equals("y")) {
+                    if ("y".equalsIgnoreCase(confirm)) {
                         boolean success = schoolStudent.deleteStudent(toDelete.getId(), toDelete.getName());
                         if (success) {
+                            System.out.println("Student deleted successfully!");
                             studentList = schoolStudent.displayAllStudent();
                         } else {
                             System.out.println("Failed to delete student.");
                         }
-                    } else {
+                    } else if ("n".equalsIgnoreCase(confirm)) {
                         System.out.println("Deletion cancelled.");
+                    } else {
+                        System.out.println("Invalid input. Deletion cancelled by default.");
                     }
                     // Check If Student List is Now Empty
                     if (studentList.isEmpty()) {

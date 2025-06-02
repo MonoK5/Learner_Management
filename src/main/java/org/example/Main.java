@@ -3,8 +3,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.example.StudentData.addStudent;
-import static org.example.StudentData.deleteStudent;
+import static org.example.StudentData.*;
 
 
 public class Main {
@@ -38,7 +37,7 @@ public class Main {
             select = Integer.parseInt(userInput);
 
             switch (select) {
-//                case 1 -> displayAllStudents();
+              //  case 1 -> displayAllStudents();
                 case 2 -> addStudent(input);
 //                case 3 -> updateStudent(input);
                 case 4 -> deleteStudent(input);

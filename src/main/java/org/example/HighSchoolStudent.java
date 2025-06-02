@@ -51,10 +51,15 @@ public class HighSchoolStudent extends AbstractStudent {
     }
     return false;
 }
-@Override
-    public List<Student> displayAllStudent() throws SQLException {
+    @Override
+    public List<Student> displayAllStudent() {
 
-       return  null;
+        String sql = "SELECT * FROM student ORDER BY name";
+
+        List<Student> students = new ArrayList<>();
+
+
+        return  students;
     }
     @Override
     public void updateStudentDetails(Student updateDetails) throws SQLException{}
@@ -68,7 +73,7 @@ public class HighSchoolStudent extends AbstractStudent {
     }
     @Override
     public boolean deleteStudent(int studentId, String studentName) throws SQLException {
-        String deleteQuery = "DELETE FROM Students WHERE id = ? AND name = ?";
+        String deleteQuery = "DELETE FROM student WHERE id = ? AND name = ?";
 
         try (Connection connection = Database.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(deleteQuery)) {
@@ -79,10 +84,10 @@ public class HighSchoolStudent extends AbstractStudent {
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Student deleted successfully with name: " +  formatter(studentName));
+                System.out.println( formatter(studentName)+ " deleted successfully.");
                 return true;
             } else {
-                System.out.println("No student found with ID: " + studentId + " and Name: " + formatter(studentName));
+                System.out.println("No " + formatter(studentName)+ " was found with ID " + studentId + " and Name: ");
                 return false;
             }
 
@@ -97,7 +102,7 @@ public class HighSchoolStudent extends AbstractStudent {
             System.out.println("Student cannot be null");
         }
 
-        String checkExistsQuery = "SELECT COUNT(*) FROM Students WHERE name = ? AND score = ?";
+        String checkExistsQuery = "SELECT COUNT(*) FROM student WHERE name = ? AND score = ?";
 
         try (Connection connection = Database.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(checkExistsQuery)) {
@@ -115,7 +120,7 @@ public class HighSchoolStudent extends AbstractStudent {
     }
     @Override
     public List<Student> getAllStudentMarks() throws SQLException {
-        String allStudentQuery = "SELECT id, name, score FROM Students ORDER BY name";
+        String allStudentQuery = "SELECT id, name, score FROM student ORDER BY name";
         List<Student> students = new ArrayList<>();
 
         try (Connection conn =Database.getConnection();
@@ -137,7 +142,7 @@ public class HighSchoolStudent extends AbstractStudent {
     @Override
     public List<Student> highestStudents() throws SQLException{
 
-        String highestScoreQuery = "SELECT id, name, score FROM Students WHERE score = (SELECT MAX(score) FROM student) ORDER BY name";
+        String highestScoreQuery = "SELECT id, name, score FROM student WHERE score = (SELECT MAX(score) FROM student) ORDER BY name";
 
         List<Student> students = new ArrayList<>();
 
