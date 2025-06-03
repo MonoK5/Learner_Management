@@ -7,7 +7,6 @@ public class Student {
     private int grade;
     private String name;
 
-
     // Constructor
     public Student(int sId, String sName, int sMarks) {
         setId(sId);
