@@ -23,8 +23,8 @@ public class Main {
             try {
                 option = Integer.parseInt(input.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input.");
-                option = -1;
+                System.out.println("Invalid input. Enter a number from 1 to 6. or 0 to Exit");
+                option = -1; // Invalid option to handle below
             }
 
             switch (option) {
@@ -35,7 +35,7 @@ public class Main {
                 case 5 -> StudService.calculateAverage();
                 case 6 -> StudService.searchStudent(input);
                 case 0 -> System.out.println("Goodbye!");
-                default -> System.out.println("Invalid option.");
+
             }
 
         } while (option != 0);
