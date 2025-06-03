@@ -9,7 +9,7 @@ import static org.example.StudService.capitalizeName;
 public class StudentDB {
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "Letsdoit!";
+    private static final String PASSWORD = "root";
 
     public static Connection connect() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -32,7 +32,6 @@ public class StudentDB {
             System.out.println("Database initialization failed: " + e.getMessage());
         }
     }
-
 
     public static void addStudent(Student student) throws SQLException {
         Random random = new Random();

@@ -37,7 +37,7 @@ public class StudService {
 
     }
 
-    static String capitalizeName(String name) {
+    public static String capitalizeName(String name) {
         name = name.trim().toLowerCase();
         if (name.isEmpty()) return name;
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
