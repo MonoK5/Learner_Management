@@ -154,18 +154,19 @@ public class StudService {
                 System.out.println("What do you want to update?");
                 System.out.println("1. Name");
                 System.out.println("2. Score");
-                System.out.print("Choose (1-2): ");
+                System.out.println("3. Both Name and Score");
+                System.out.print("Choose (1-3): ");
                 String inputChoice = input.nextLine();
                 try {
                     choice = Integer.parseInt(inputChoice);
-                    if (choice == 1 || choice == 2) break;
-                    else System.out.println("Choose 1 or 2.");
+                    if (choice >= 1 && choice <= 3) break;
+                    else System.out.println("Choose 1, 2, or 3.");
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input.");
                 }
             }
 
-            if (choice == 1) {
+            if (choice == 1 || choice == 3) {
                 String newName;
                 while (true) {
                     System.out.print("Enter new name (or 0 to cancel): ");
@@ -180,7 +181,9 @@ public class StudService {
                     }
                 }
                 student.setName(capitalizeName(newName));
-            } else {
+            }
+
+            if (choice == 2 || choice == 3) {
                 int newScore;
                 while (true) {
                     System.out.print("Enter new score (0–100): ");
@@ -210,6 +213,7 @@ public class StudService {
 
         } while (repeat);
     }
+
 
 
 
