@@ -16,7 +16,7 @@ public class Database {
              Statement stmt = conn.createStatement()) {
 
             String createDB = """
-                CREATE TABLE IF NOT EXISTS Students (
+                CREATE TABLE IF NOT EXISTS student (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(50),
                     score INT,
