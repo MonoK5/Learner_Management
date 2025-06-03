@@ -62,27 +62,20 @@ public class StudentDB {
         return students;
     }
 
-    public static void updateStudentName(int id, String newName) {
-        String sql = "UPDATE students SET name = ? WHERE id = ?";
+
+
+    public static void updateStudent(Student student) {
+        String sql = "UPDATE students SET name = ?, score = ? WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, newName);
-            pstmt.setInt(2, id);
+            pstmt.setString(1, student.getName());
+            pstmt.setInt(2, student.getScore());
+            pstmt.setInt(3, student.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error updating student name: " + e.getMessage());
+            System.out.println("Error updating student: " + e.getMessage());
         }
     }
 
-    public static void updateStudentScore(int id, int newScore) {
-        String sql = "UPDATE students SET score = ? WHERE id = ?";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, newScore);
-            pstmt.setInt(2, id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Error updating student score: " + e.getMessage());
-        }
-    }
 
     public static void deleteStudent(int id) {
         String sql = "DELETE FROM students WHERE id = ?";
@@ -130,16 +123,6 @@ public class StudentDB {
         return null;
     }
 
-    public static void updateStudent(Student student) {
-        String sql = "UPDATE students SET name = ?, score = ? WHERE id = ?";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, student.getName());
-            pstmt.setInt(2, student.getScore());
-            pstmt.setInt(3, student.getId());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Error updating student: " + e.getMessage());
-        }
-    }
+
 
 }
