@@ -27,12 +27,9 @@ public class StudService {
         }
 
         System.out.println("------------------------------------------------");
-        System.out.printf("| %-43s |\n", "Total Student");
+        System.out.printf("| %-10s %-27d  |\n", "Total Student:", students.size());
         System.out.println("------------------------------------------------");
 
-            System.out.printf("|\t\t %-36d |\n", students.size());
-
-        System.out.println("------------------------------------------------");
 
 
     }
@@ -163,6 +160,10 @@ public class StudService {
             }
 
             Student student = StudentDB.getStudentById(id);
+            if (student == null) { // Extra safety check (should not happen due to earlier check)
+                System.out.println("Error: Student not found!");
+                return;
+            }
 
             int choice;
             while (true) {
@@ -190,13 +191,18 @@ public class StudService {
                     if (newName.equals("0")) return;
 
                     if (newName.isEmpty() || !newName.matches("[a-zA-Z ]+")) {
-                        System.out.println("Invalid name.");
+                        System.out.println("Invalid name. Use only letters and spaces.");
                     } else {
                         break;
                     }
                 }
-                if (student != null) {
+
+                if (student.getName().equalsIgnoreCase(newName)) {
+                    System.out.println("No changes made, " + capitalizeName(newName) + " is already  exist.");
+                } else {
+                    String oldName = student.getName();
                     student.setName(capitalizeName(newName));
+                    System.out.println("Name updated " + oldName + " -> " + student.getName() + " successful.");
                 }
             }
 
@@ -208,8 +214,12 @@ public class StudService {
                     try {
                         newScore = Integer.parseInt(scoreInput);
                         if (newScore >= 0 && newScore <= 100) {
-                            if (student != null) {
+                            int currentScore = student.getScore();
+                            if (currentScore != newScore) {
                                 student.setScore(newScore);
+                                System.out.println("Score updated " + currentScore + " → " + newScore + " successful.");
+                            } else {
+                                System.out.println("New score (" + newScore + ") is the same as current score (" + currentScore + ").");
                             }
                             break;
                         } else {
@@ -222,10 +232,7 @@ public class StudService {
             }
 
             // Save the updated student using StudentDB
-            if (student != null) {
-                StudentDB.updateStudent(student);
-                System.out.println("Student updated.");
-            }
+            StudentDB.updateStudent(student);
 
             System.out.println("Update another student? ");
             System.out.print("1: Yes \n2: Exit\n");
@@ -235,15 +242,7 @@ public class StudService {
 
         } while (repeat);
     }
-
-    public static void deleteStudent(Scanner input) throws  SQLException{
-        ArrayList<Student> students = StudentDB.getAllStudents();
-
-        if (students.isEmpty()) {
-            System.out.println("No students to delete.");
-            return;
-        }
-
+    public static void deleteStudent(Scanner input) throws SQLException {
         boolean repeat;
         do {
             displayAll();
@@ -254,31 +253,16 @@ public class StudService {
                 String idInput = input.nextLine();
                 try {
                     id = Integer.parseInt(idInput);
-
                     if (id == 0) {
                         System.out.println("Cancelled. Returning to main menu.");
                         return;
                     }
-
-                    boolean idExists = false;
-                    for (Student s : students) {
-                        if (s.getId() == id) {
-                            idExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!idExists) {
-                        System.out.println("Student ID not found. Please try again.");
-                    } else {
-                        break;
-                    }
+                    break;
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a valid number.");
                 }
             }
 
-            // Confirm deletion
             int confirmDelete;
             while (true) {
                 System.out.println("Are you sure you want to delete student ID " + id + "?");
@@ -288,11 +272,8 @@ public class StudService {
                 String confirmInput = input.nextLine();
                 try {
                     confirmDelete = Integer.parseInt(confirmInput);
-                    if (confirmDelete == 1 || confirmDelete == 2) {
-                        break;
-                    } else {
-                        System.out.println("Please choose 1 or 2.");
-                    }
+                    if (confirmDelete == 1 || confirmDelete == 2) break;
+                    else System.out.println("Please choose 1 or 2.");
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Enter a number.");
                 }
@@ -304,7 +285,6 @@ public class StudService {
             }
 
             StudentDB.deleteStudent(id);
-            System.out.println("Student deleted successfully.");
 
             int again;
             while (true) {
@@ -313,11 +293,17 @@ public class StudService {
                 System.out.println("2. No (Return to Main Menu)");
                 System.out.print("Choose (1-2): ");
                 String againInput = input.nextLine();
+
                 try {
                     again = Integer.parseInt(againInput);
-                    if (again == 1 || again == 2) {
+                    if (again == 1){
                         break;
-                    } else {
+                    }
+                    else if(again == 2){
+                        System.out.println("Returning to main menu.");
+                        break;
+                    }
+                    else{
                         System.out.println("Please choose 1 or 2.");
                     }
                 } catch (NumberFormatException e) {
@@ -328,7 +314,6 @@ public class StudService {
             repeat = (again == 1);
         } while (repeat);
     }
-
     public static void calculateAverage(){
         System.out.println("\n\t--- Student Average ---");
 

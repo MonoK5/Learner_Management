@@ -36,7 +36,6 @@ public class Main {
                 case 5 -> StudService.calculateAverage();
                 case 6 -> StudService.searchStudent(input);
                 case 0 -> System.out.println("Goodbye!");
-
             }
 
         } while (option != 0);

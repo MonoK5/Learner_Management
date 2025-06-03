@@ -90,7 +90,7 @@ public class StudentDB {
 
     public static ArrayList<Student> getAllStudents() {
         ArrayList<Student> students = new ArrayList<>();
-        String sql = "SELECT * FROM students";
+        String sql = "SELECT * FROM students ORDER BY name";
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement();
@@ -122,29 +122,37 @@ public class StudentDB {
         }
     }
 
+    public static void deleteStudent(int id) {
+        String sql = "DELETE FROM students WHERE id = ?";
 
-    public static void deleteStudent(int id)  throws  SQLException{
-        String sql = "DELETE FROM student WHERE id = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        try (Connection connection = connect();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
+            // Set parameters and execute
             pstmt.setInt(1, id);
-
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Student deleted successfully with ID: " + id);
+                System.out.println("Successfully deleted student with ID: " + id);
+
             } else {
                 System.out.println("No student found with ID: " + id);
             }
 
         } catch (SQLException e) {
-            System.out.println("Error deleting student: " + e.getMessage());
-            throw e;
+            System.err.println("Database error deleting student: " + e.getMessage());
         }
     }
 
+    private static boolean studentExists(Connection connection, int id) throws SQLException {
+        String sql = "SELECT 1 FROM student WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
     public static ArrayList<Student> searchStudentByName(String name) {
         ArrayList<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM students WHERE LOWER(name) LIKE LOWER(?)";
@@ -173,7 +181,11 @@ public class StudentDB {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new Student(rs.getInt("id"), rs.getString("name"), rs.getInt("score"), rs.getInt("grade"));
+                return new Student(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getInt("score"),
+                        rs.getInt("grade"));
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving student: " + e.getMessage());
