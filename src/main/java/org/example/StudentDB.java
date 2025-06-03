@@ -2,6 +2,7 @@ package org.example;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class StudentDB {
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
@@ -15,7 +16,7 @@ public class StudentDB {
     public static void initializeDatabase() {
         String sql = """
             CREATE TABLE IF NOT EXISTS students (
-                id SERIAL PRIMARY KEY,
+                id INT PRIMARY KEY,
                 name VARCHAR(50),
                 score INT,
                 grade INT
@@ -30,17 +31,33 @@ public class StudentDB {
         }
     }
 
+
     public static void addStudent(Student student) {
-        String sql = "INSERT INTO students (name, score, grade) VALUES (?, ?, ?)";
+        Random random = new Random();
+        int randomId;
+        boolean unique = false;
+
+        // Generate random IDs until you find one that doesn't exist in DB
+        do {
+            randomId = random.nextInt(1000); // example range 0 to 999,999
+            if (getStudentById(randomId) == null) {
+                unique = true;
+            }
+        } while (!unique);
+
+        String sql = "INSERT INTO students (id, name, score, grade) VALUES (?, ?, ?, ?)";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, student.getName());
-            pstmt.setInt(2, student.getScore());
-            pstmt.setInt(3, student.getGrade());
+            pstmt.setInt(1, randomId);
+            pstmt.setString(2, student.getName());
+            pstmt.setInt(3, student.getScore());
+            pstmt.setInt(4, student.getGrade());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error adding student: " + e.getMessage());
         }
     }
+
+
 
     public static ArrayList<Student> getAllStudents() {
         ArrayList<Student> students = new ArrayList<>();
