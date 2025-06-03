@@ -4,7 +4,7 @@ public class Student {
     private int id;
     private String name;
     private int score;
-    private int grade;
+    private final int grade;
 
     public Student(int id, String name, int score, int grade) {
         this.id = id;

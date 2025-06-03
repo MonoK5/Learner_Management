@@ -1,7 +1,13 @@
 package org.example;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
+
+
+
 public class StudService {
 
     public static void displayAll() {
@@ -21,19 +27,23 @@ public class StudService {
         }
 
         System.out.println("------------------------------------------------");
-        System.out.println("Total Students: " + students.size());
+        System.out.printf("| %-43s |\n", "Total Student");
+        System.out.println("------------------------------------------------");
+
+            System.out.printf("|\t\t %-36d |\n", students.size());
+
+        System.out.println("------------------------------------------------");
+
 
     }
 
-    private static String capitalizeName(String name) {
+    static String capitalizeName(String name) {
         name = name.trim().toLowerCase();
         if (name.isEmpty()) return name;
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 
-
-
-    public static void addStudent(Scanner input) {
+    public static void addStudent(Scanner input) throws SQLException {
         while (true) {
             String name;
             int score;
@@ -64,6 +74,10 @@ public class StudService {
                             .anyMatch(s -> s.getName().equalsIgnoreCase(validatedName));
                     {
                         name = validatedName;
+                        if (exists) {
+                            System.out.println("Student " + capitalizeName(validatedName) + " already exists.");
+                            continue;
+                        }
                         break;
                     }
                 }
@@ -91,7 +105,6 @@ public class StudService {
             // Add student to DB
             Student student = new Student(name, score);
             StudentDB.addStudent(student);
-            System.out.println("Student added successfully!");
 
             // Ask if user wants to add another
             int again;
@@ -110,10 +123,12 @@ public class StudService {
                 }
             }
 
-            if (again == 2) break;
+            if (again == 2) {
+                System.out.println("Return to main menu.");
+                break;
+            }
         }
     }
-
 
     public static void updateStudent(Scanner input) {
         ArrayList<Student> students = StudentDB.getAllStudents();
@@ -180,7 +195,9 @@ public class StudService {
                         break;
                     }
                 }
-                student.setName(capitalizeName(newName));
+                if (student != null) {
+                    student.setName(capitalizeName(newName));
+                }
             }
 
             if (choice == 2 || choice == 3) {
@@ -191,7 +208,9 @@ public class StudService {
                     try {
                         newScore = Integer.parseInt(scoreInput);
                         if (newScore >= 0 && newScore <= 100) {
-                            student.setScore(newScore);
+                            if (student != null) {
+                                student.setScore(newScore);
+                            }
                             break;
                         } else {
                             System.out.println("Score must be 0–100.");
@@ -203,23 +222,21 @@ public class StudService {
             }
 
             // Save the updated student using StudentDB
-            StudentDB.updateStudent(student);
+            if (student != null) {
+                StudentDB.updateStudent(student);
+                System.out.println("Student updated.");
+            }
 
-            System.out.println("Student updated.");
-
-            System.out.println("Update another student? (1: Yes, 2: No)");
+            System.out.println("Update another student? ");
+            System.out.print("1: Yes \n2: Exit\n");
+            System.out.print("Choose option: ");
             String againInput = input.nextLine();
             repeat = againInput.equals("1");
 
         } while (repeat);
     }
 
-
-
-
-
-
-    public static void deleteStudent(Scanner input) {
+    public static void deleteStudent(Scanner input) throws  SQLException{
         ArrayList<Student> students = StudentDB.getAllStudents();
 
         if (students.isEmpty()) {
@@ -312,11 +329,9 @@ public class StudService {
         } while (repeat);
     }
 
+    public static void calculateAverage(){
+        System.out.println("\n\t--- Student Average ---");
 
-
-
-
-    public static void calculateAverage() {
         ArrayList<Student> students = StudentDB.getAllStudents();
 
         if (students.isEmpty()) {
@@ -324,57 +339,78 @@ public class StudService {
             return;
         }
 
-        // Display the table first
-        displayAll();
-
-        // Calculate average score
         int totalScore = 0;
         for (Student s : students) {
             totalScore += s.getScore();
         }
 
         double average = (double) totalScore / students.size();
-        System.out.printf("Average Score: %.2f%%\n", average);
-        System.out.println("------------------------------------------------");
+
+        System.out.println("----------------------------------");
+        System.out.println("| AVERAGE SCORE | NO OF STUDENTS |");
+        System.out.println("----------------------------------");
+        System.out.printf("| %.2f%%    \t| %-15d|\n", average, students.size());
+        System.out.println("----------------------------------");
+
     }
 
+    public static void searchStudent(Scanner input) throws SQLException{
+        boolean searchAgain = true;
 
+        do {
+            System.out.println("\n\t--- Search Student ---");
+            System.out.print("Enter student name to search: ");
+            String nameToSearch = input.nextLine().trim();
 
-
-    public static void searchStudent(Scanner input) {
-        while (true) {
-            System.out.print("Enter name to search (or 0 to exit): ");
-            String name = input.nextLine();
-
-            if (name.equals("0")) {
-                System.out.println("Exiting search.");
-                break;
+            if (nameToSearch.isEmpty()) {
+                System.out.println("Search term cannot be empty.");
+                continue;
             }
 
-            ArrayList<Student> results = StudentDB.searchStudentByName(name);
+
+            List<Student> results = new ArrayList<>();
+            results = StudentDB.searchStudentByName(nameToSearch);
 
             if (results.isEmpty()) {
-                System.out.println("No matching students found.");
+                System.out.println("\tNo student found containing");
+                System.out.println("----------------------------------------------");
+                System.out.println("| ID  | NAME           | GRADE | SCORE/MARKS |");
+                System.out.println("----------------------------------------------");
+                System.out.printf("| %-3d | %-14s | %-5d | \t%-8d |%n", 0, capitalizeName(nameToSearch), 0, 0);
+
+                System.out.println("----------------------------------------------");
             } else {
-                // Print table header
-                System.out.printf("%-5s %-15s %-7s %-7s%n", "ID", "Name", "Score", "Grade");
-                System.out.println("----------------------------------------");
 
-                // Print each student in a formatted row
+                System.out.println("----------------------------------------------");
+                System.out.println("| ID  | NAME           | GRADE | SCORE/MARKS |");
+                System.out.println("----------------------------------------------");
                 for (Student s : results) {
-                    System.out.printf("%-5d %-15s %-7d %-7d%n", s.getId(), s.getName(), s.getScore(), s.getGrade());
-                    System.out.println("----------------------------------------");
+                    System.out.printf("| %-3d | %-14s | %-5d | \t%-8d |%n",
+                            s.getId(),
+                            capitalizeName(s.getName()),
+                            s.getGrade(),
+                            s.getScore());
                 }
-                break;  // exit after showing results
+                System.out.println("----------------------------------------------");
             }
-        }
+
+            while (true) {
+                System.out.print("Do you want to search again? (y/n): ");
+                String choice = input.nextLine().trim().toLowerCase();
+
+                if (choice.equals("y")) {
+                    break;
+                } else if (choice.equals("n")) {
+                    System.out.println("Returning to main menu.");
+                    searchAgain = false;
+                    break;
+                } else {
+                    System.out.println("Please enter (y/n).");
+                }
+            }
+
+        } while (searchAgain);
     }
-
-
-
-
-
-
 
 
 }

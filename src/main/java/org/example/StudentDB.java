@@ -4,10 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static org.example.StudService.capitalizeName;
+
 public class StudentDB {
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "Letsdoit!";
 
     public static Connection connect() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -32,10 +34,18 @@ public class StudentDB {
     }
 
 
-    public static void addStudent(Student student) {
+    public static void addStudent(Student student) throws SQLException {
         Random random = new Random();
         int randomId;
         boolean unique = false;
+
+        if (studentExists(student)) {
+            System.out.println("Student " + student.getName() + " with score " +
+                    student.getScore() + " already exists.");
+            return;
+        }else{
+            System.out.println(capitalizeName(student.getName())+ " was added successfully.");
+        }
 
         // Generate random IDs until you find one that doesn't exist in DB
         do {
@@ -57,13 +67,35 @@ public class StudentDB {
         }
     }
 
+    public static boolean studentExists(Student student) throws SQLException {
+        if (student == null) {
+            System.out.println("Student cannot be null");
+        }
 
+        String sql = "SELECT COUNT(*) FROM student WHERE name = ? AND score = ?";
+
+        try (Connection connection = connect();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            pstmt.setString(1, student != null ? student.getName() : null);
+            pstmt.setInt(2, student != null ? student.getScore() : 0);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking student existence: " + e.getMessage());
+            throw e;
+        }
+    }
 
     public static ArrayList<Student> getAllStudents() {
         ArrayList<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM students";
 
-        try (Connection conn = connect(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 students.add(new Student(
                         rs.getInt("id"),
@@ -79,8 +111,6 @@ public class StudentDB {
         return students;
     }
 
-
-
     public static void updateStudent(Student student) {
         String sql = "UPDATE students SET name = ?, score = ? WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -94,13 +124,25 @@ public class StudentDB {
     }
 
 
-    public static void deleteStudent(int id) {
-        String sql = "DELETE FROM students WHERE id = ?";
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    public static void deleteStudent(int id)  throws  SQLException{
+        String sql = "DELETE FROM student WHERE id = ?";
+
+        try (Connection connection = connect();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Student deleted successfully with ID: " + id);
+            } else {
+                System.out.println("No student found with ID: " + id);
+            }
+
         } catch (SQLException e) {
             System.out.println("Error deleting student: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -139,7 +181,5 @@ public class StudentDB {
         }
         return null;
     }
-
-
 
 }
