@@ -36,8 +36,11 @@ public class Main {
                 case 5 -> StudService.calculateAverage();
                 case 6 -> StudService.searchStudent(input);
                 case 0 -> System.out.println("Goodbye!");
+                default -> System.out.println("Please enter a valid option.");
             }
 
         } while (option != 0);
+
+        input.close();
     }
 }

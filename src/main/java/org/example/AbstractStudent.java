@@ -25,10 +25,10 @@ public abstract class AbstractStudent {
     public int getScore() { return score; }
     public int getGrade() { return grade; }
 
-    public void setId(int id) { this.id = id; }
+
     public void setName(String name) { this.name = name; }
     public void setScore(int score) { this.score = score; }
-    public void setGrade(int grade) { this.grade = grade; }
+
 
     // Abstract method that must be implemented by subclasses
     public abstract String getStudentType();
