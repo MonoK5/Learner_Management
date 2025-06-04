@@ -5,8 +5,15 @@ import java.util.*;
 
 public class StudService {
 
+    // Encapsulation: Using private input to restrict direct access from other classes
     private static final Scanner input = new Scanner(System.in);
 
+    /**
+     * Displays all students.
+     * Demonstrates: Encapsulation and Abstraction
+     * - Encapsulation: hides how students are displayed.
+     * - Abstraction: uses StudentDB to fetch data, hiding database details.
+     */
     public static void displayAll() {
         List<Student> students = StudentDB.getAllStudents();
         if (students.isEmpty()) {
@@ -24,21 +31,32 @@ public class StudService {
         System.out.println("------------------------------------------------");
     }
 
+    /**
+     * Adds a new student after validation.
+     * Demonstrates: Encapsulation and Abstraction
+     */
     public static void addStudent(Scanner input) throws SQLException {
         do {
             String name = getValidName("Enter name (or 0 to cancel): ");
             if (name == null) return;
 
+            // Abstraction: uses StudentDB to query student existence
             if (StudentDB.getAllStudents().stream().anyMatch(s -> s.getName().equalsIgnoreCase(name))) {
                 System.out.println("Student already exists.");
                 continue;
             }
 
             int score = getValidScore("Enter score (0–100): ");
+
+            // Abstraction: uses StudentDB to add new student
             StudentDB.addStudent(new Student(capitalizeName(name), score));
         } while (askYesNo("Add another student?"));
     }
 
+    /**
+     * Updates a student’s name or score or both.
+     * Demonstrates: Encapsulation and Abstraction
+     */
     public static void updateStudent(Scanner input) {
         List<Student> students = StudentDB.getAllStudents();
         if (students.isEmpty()) {
@@ -47,7 +65,8 @@ public class StudService {
         }
 
         do {
-            displayAll();
+            displayAll(); // Encapsulation: separate display logic
+
             int id = getValidId("Enter student ID to update (or 0 to cancel): ");
             if (id == 0) return;
 
@@ -74,23 +93,32 @@ public class StudService {
                 System.out.println("Score updated successfully.");
             }
 
-            StudentDB.updateStudent(student);
+            StudentDB.updateStudent(student); // Abstraction
         } while (askYesNo("Update another student?"));
     }
 
+    /**
+     * Deletes a student by ID.
+     * Demonstrates: Encapsulation and Abstraction
+     */
     public static void deleteStudent(Scanner input) throws SQLException {
         do {
             displayAll();
+
             int id = getValidId("Enter student ID to delete (or 0 to cancel): ");
             if (id == 0) return;
 
             if (askYesNo("Are you sure you want to delete student ID " + id + "?")) {
-                StudentDB.deleteStudent(id);
+                StudentDB.deleteStudent(id); // Abstraction
                 System.out.println("Student deleted.");
             }
         } while (askYesNo("Delete another student?"));
     }
 
+    /**
+     * Searches for students by name.
+     * Demonstrates: Encapsulation and Abstraction
+     */
     public static void searchStudent(Scanner input) throws SQLException {
         boolean searchAgain = false;
         do {
@@ -103,7 +131,7 @@ public class StudService {
                 continue;
             }
 
-            List<Student> results = StudentDB.searchStudentByName(nameToSearch);
+            List<Student> results = StudentDB.searchStudentByName(nameToSearch); // Abstraction
 
             System.out.println("------------------------------------------------");
             System.out.println("| ID   | NAME           | GRADE | SCORE/MARKS |");
@@ -126,6 +154,10 @@ public class StudService {
         } while (searchAgain);
     }
 
+    /**
+     * Calculates and displays the average score of all students.
+     * Demonstrates: Encapsulation and Abstraction
+     */
     public static void calculateAverage() {
         List<Student> students = StudentDB.getAllStudents();
         if (students.isEmpty()) {
@@ -142,14 +174,15 @@ public class StudService {
         System.out.println("------------------------------------------------");
     }
 
+    // ----------------- Helper Methods (Encapsulation) -----------------
 
-    // ----------------- Helper Methods -----------------
-
+    // Capitalizes the first letter of a name
     static String capitalizeName(String name) {
         name = name.trim().toLowerCase();
         return name.isEmpty() ? name : Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 
+    // Validates name input
     private static String getValidName(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -164,6 +197,7 @@ public class StudService {
         }
     }
 
+    // Validates score input
     private static int getValidScore(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -177,6 +211,7 @@ public class StudService {
         }
     }
 
+    // Validates numeric ID input
     private static int getValidId(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -188,6 +223,7 @@ public class StudService {
         }
     }
 
+    // Yes/No prompt
     private static boolean askYesNo(String question) {
         while (true) {
             System.out.print(question + " (1: Yes, 2: No): ");
@@ -198,6 +234,7 @@ public class StudService {
         }
     }
 
+    // Validates choice from a range
     private static int getValidOption(String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);

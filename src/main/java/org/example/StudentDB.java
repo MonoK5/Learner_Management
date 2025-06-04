@@ -7,14 +7,17 @@ import java.util.Random;
 import static org.example.StudService.capitalizeName;
 
 public class StudentDB {
+    // Database connection parameters
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USER = "postgres";
     private static final String PASSWORD = "root";
 
+    // Establishes and returns a connection to the database
     public static Connection connect() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
+    // Initializes the 'students' table if it doesn't exist
     public static void initializeDatabase() {
         String sql = """
             CREATE TABLE IF NOT EXISTS students (
@@ -33,6 +36,7 @@ public class StudentDB {
         }
     }
 
+    // Adds a new student to the database if not already present
     public static void addStudent(Student student) throws SQLException {
         Random random = new Random();
         int randomId;
@@ -42,13 +46,13 @@ public class StudentDB {
             System.out.println("Student " + student.getName() + " with score " +
                     student.getScore() + " already exists.");
             return;
-        }else{
-            System.out.println(capitalizeName(student.getName())+ " was added successfully.");
+        } else {
+            System.out.println(capitalizeName(student.getName()) + " was added successfully.");
         }
 
-        // Generate random IDs until you find one that doesn't exist in DB
+        // Generate a unique random ID
         do {
-            randomId = random.nextInt(1000); // example range 0 to 999,999
+            randomId = random.nextInt(1000); // ID range: 0–999
             if (getStudentById(randomId) == null) {
                 unique = true;
             }
@@ -66,18 +70,19 @@ public class StudentDB {
         }
     }
 
+    // Checks if a student already exists based on name and score
     public static boolean studentExists(Student student) throws SQLException {
         if (student == null) {
             System.out.println("Student cannot be null");
+            return false;
         }
 
-        String sql = "SELECT COUNT(*) FROM student WHERE name = ? AND score = ?";
+        String sql = "SELECT COUNT(*) FROM students WHERE name = ? AND score = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        try (Connection connection = connect();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
-            pstmt.setString(1, student != null ? student.getName() : null);
-            pstmt.setInt(2, student != null ? student.getScore() : 0);
+            pstmt.setString(1, student.getName());
+            pstmt.setInt(2, student.getScore());
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 return rs.next() && rs.getInt(1) > 0;
@@ -88,6 +93,7 @@ public class StudentDB {
         }
     }
 
+    // Retrieves all students sorted by name
     public static ArrayList<Student> getAllStudents() {
         ArrayList<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM students ORDER BY name";
@@ -95,6 +101,7 @@ public class StudentDB {
         try (Connection conn = connect();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
+
             while (rs.next()) {
                 students.add(new Student(
                         rs.getInt("id"),
@@ -110,31 +117,56 @@ public class StudentDB {
         return students;
     }
 
+    // ✅ Updated: Updates an existing student record with validation and feedback
     public static void updateStudent(Student student) {
-        String sql = "UPDATE students SET name = ?, score = ? WHERE id = ?";
+        if (student == null) {
+            System.out.println("Cannot update: student is null.");
+            return;
+        }
+
+        // Check if student exists in DB
+        if (getStudentById(student.getId()) == null) {
+            System.out.println("Student with ID " + student.getId() + " does not exist.");
+            return;
+        }
+
+        // Basic validation for name
+        if (student.getName() == null || student.getName().trim().isEmpty()) {
+            System.out.println("Invalid name. Update aborted.");
+            return;
+        }
+
+        // Update name, score, and grade
+        String sql = "UPDATE students SET name = ?, score = ?, grade = ? WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, student.getName());
             pstmt.setInt(2, student.getScore());
-            pstmt.setInt(3, student.getId());
-            pstmt.executeUpdate();
+            pstmt.setInt(3, student.getGrade());
+            pstmt.setInt(4, student.getId());
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Student with ID " + student.getId() + " updated successfully.");
+            } else {
+                System.out.println("Update failed: no student found with ID " + student.getId());
+            }
         } catch (SQLException e) {
             System.out.println("Error updating student: " + e.getMessage());
         }
     }
 
+    // Deletes a student by ID
     public static void deleteStudent(int id) {
         String sql = "DELETE FROM students WHERE id = ?";
 
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Set parameters and execute
             pstmt.setInt(1, id);
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
                 System.out.println("Successfully deleted student with ID: " + id);
-
             } else {
                 System.out.println("No student found with ID: " + id);
             }
@@ -144,6 +176,7 @@ public class StudentDB {
         }
     }
 
+    // Searches students by (partial) name
     public static ArrayList<Student> searchStudentByName(String name) {
         ArrayList<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM students WHERE LOWER(name) LIKE LOWER(?)";
@@ -151,6 +184,7 @@ public class StudentDB {
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, "%" + name + "%");
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
                 students.add(new Student(
                         rs.getInt("id"),
@@ -166,22 +200,25 @@ public class StudentDB {
         return students;
     }
 
+    // Retrieves a single student by ID
     public static Student getStudentById(int id) {
         String sql = "SELECT * FROM students WHERE id = ?";
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 return new Student(
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getInt("score"),
-                        rs.getInt("grade"));
+                        rs.getInt("grade")
+                );
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving student: " + e.getMessage());
         }
+
         return null;
     }
-
 }
