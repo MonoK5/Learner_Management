@@ -1,3 +1,4 @@
+// StudentDB.java
 package org.example;
 
 import java.sql.*;
@@ -7,23 +8,6 @@ import java.util.Random;
 import static org.example.StudService.capitalizeName;
 
 public class StudentDB {
-
-    public static void initializeDatabase() {
-        String sql = "CREATE TABLE IF NOT EXISTS students (" +
-                "id INTEGER PRIMARY KEY," +
-                "name VARCHAR(100) NOT NULL," +
-                "score INTEGER NOT NULL," +
-                "grade INTEGER NOT NULL" +
-                ");";
-
-        try (Connection conn = DatabaseConnection.connect();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Database initialized successfully.");
-        } catch (SQLException e) {
-            System.out.println("Error initializing database: " + e.getMessage());
-        }
-    }
 
     public static void addStudent(Student student) throws SQLException {
         Random random = new Random();

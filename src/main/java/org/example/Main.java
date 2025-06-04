@@ -5,7 +5,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        StudentDB.initializeDatabase();
+        // Initialize the database table
+        DatabaseConnection.initializeTable();
 
         Scanner input = new Scanner(System.in);
         int option;
@@ -22,12 +23,15 @@ public class Main {
             System.out.print("Choose option: ");
 
             try {
+                // Try to convert input to an integer
                 option = Integer.parseInt(input.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Enter a number from 1 to 6. or 0 to Exit");
-                option = -1; // Invalid option to handle below
+                // Handle invalid number input
+                System.out.println("Invalid input. Please enter a number from 0 to 6.");
+                option = -1;
             }
 
+            // Menu options based on user input
             switch (option) {
                 case 1 -> StudService.displayAll();
                 case 2 -> StudService.addStudent(input);
@@ -39,8 +43,8 @@ public class Main {
                 default -> System.out.println("Please enter a valid option.");
             }
 
-        } while (option != 0);
+        } while (option != 0); // Repeat until user exits
 
-        input.close();
+        input.close(); // Close scanner
     }
 }
