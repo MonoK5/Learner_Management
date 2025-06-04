@@ -144,15 +144,6 @@ public class StudentDB {
         }
     }
 
-    private static boolean studentExists(Connection connection, int id) throws SQLException {
-        String sql = "SELECT 1 FROM student WHERE id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
     public static ArrayList<Student> searchStudentByName(String name) {
         ArrayList<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM students WHERE LOWER(name) LIKE LOWER(?)";
